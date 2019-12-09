@@ -7,8 +7,9 @@
 //
 
 #import "ViewController.h"
+#import "Runnable.h"
 
-@interface ViewController ()
+@interface ViewController ()<Runnable>
 
 @end
 
@@ -16,8 +17,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"%d   %@",self.canRun,[[self class] runClass]);
     // Do any additional setup after loading the view.
 }
-
 
 @end

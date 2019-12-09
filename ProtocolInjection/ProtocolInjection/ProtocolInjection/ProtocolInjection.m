@@ -7,9 +7,12 @@
 //
 
 #import "ProtocolInjection.h"
-@import ObjectiveC.runtime;
 @import ObjectiveC.message;
 #import <CoreFoundation/CoreFoundation.h>
+
+__attribute__((constructor)) static void ProtocolInject (void) {
+    pi_injection();
+}
 
 static CFMutableDictionaryRef restrict injectionProtocols = NULL;
 
@@ -17,7 +20,7 @@ static CFMutableSetRef restrict injectionClasses = NULL;
 
 FOUNDATION_STATIC_INLINE void _injectMethod(Class class,Method method) {
     if (class_getInstanceMethod(class, method_getName(method))) {
-        printf("Errr: Class has a custom imp for thie method %s",sel_getName(method_getName(method)));
+        printf("Errr: Class has a custom imp for thie method %s %s",sel_getName(method_getName(method)),class_getName(class));
         return;
     }
     class_addMethod(class, method_getName(method), method_getImplementation(method), method_getTypeEncoding(method));
@@ -29,8 +32,8 @@ static void InjectionClassApplierFunction(const void *value,const void *context)
     __unsafe_unretained Protocol **protocols = class_copyProtocolList(class, &count);
     for (unsigned int i =0; i<count; i++) {
         Protocol *protocol = protocols[i];
-        if (CFDictionaryContainsKey(injectionProtocols, protocol_getName(protocol))) {
-            Class containerClass = CFDictionaryGetValue(injectionProtocols, protocol_getName(protocol));
+        if (CFDictionaryContainsKey(injectionProtocols, (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]))) {
+            Class containerClass = CFDictionaryGetValue(injectionProtocols, (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]));
             unsigned int count = 0;
             Method *instanceMethods = class_copyMethodList(containerClass, &count);
             for (unsigned int j=0; j<count; j++) {
@@ -38,7 +41,7 @@ static void InjectionClassApplierFunction(const void *value,const void *context)
             }
             Method *classMethods = class_copyMethodList(object_getClass(containerClass), &count);
             for (unsigned int j=0; j<count; j++) {
-                _injectMethod(object_getClass(containerClass), classMethods[j]);
+                _injectMethod(object_getClass(class), classMethods[j]);
             }
             free(instanceMethods);
             free(classMethods);
@@ -47,35 +50,38 @@ static void InjectionClassApplierFunction(const void *value,const void *context)
     free(protocols);
 }
 
-void protocolInjectionAdded(Protocol *protocol,Class containerClass) {
+void pi_protocolInjectionAdded(Protocol *protocol,Class containerClass) {
     NSCParameterAssert(protocol);
     NSCParameterAssert(containerClass);
     if (injectionProtocols == NULL) {
-        injectionProtocols = CFDictionaryCreateMutable(CFAllocatorGetDefault(), 0, &kCFCopyStringDictionaryKeyCallBacks, NULL);
+        injectionProtocols = CFDictionaryCreateMutable(CFAllocatorGetDefault(), 0, &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
     }
     
-    if (CFDictionaryContainsKey(injectionProtocols, protocol_getName(protocol))) {
+    if (CFDictionaryContainsKey(injectionProtocols, (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]))) {
         printf("Error: Could not inejct an already injected protocol");
         return;
     }
     
-    CFDictionaryAddValue(injectionProtocols,protocol_getName(protocol), (__bridge const void *)(containerClass));
-    
+    CFDictionarySetValue(injectionProtocols, (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]), (__bridge const void *)(containerClass));
 }
 
-void classInjected(Class injectionClass) {
+void pi_classInjected(Class injectionClass) {
     NSCParameterAssert(injectionClass);
-    if (!injectionClasses) {
+    if (injectionClasses == NULL) {
         injectionClasses = CFSetCreateMutable(CFAllocatorGetDefault(), 0, &kCFTypeSetCallBacks);
     }
     if (CFSetContainsValue(injectionClasses, (__bridge const void *)(injectionClass))) {
         printf("Eooro: Could not inject an already injected class");
         return;
     }
-    CFSetAddValue(injectionClasses, (__bridge const void *)(injectionClass));
+    CFSetSetValue(injectionClasses, (__bridge const void *)(injectionClass));
 }
 
-void injection(void) {
+void pi_injection(void) {
+    if (injectionClasses == NULL) {
+        printf("There is nothing to inject");
+        return;
+    }
     CFSetApplyFunction(injectionClasses, (CFSetApplierFunction)&InjectionClassApplierFunction, NULL);
     CFRelease(injectionClasses);
     CFRelease(injectionProtocols);

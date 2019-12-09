@@ -7,10 +7,26 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <objc/runtime.h>
 
+#define injectionable \
+    + (void)load { \
+        pi_classInjected(self); \
+    }
 
-void protocolInjectionAdded(Protocol *protocol,Class containerClass);
+#define injection optional;
 
-void classInjected(Class injectionClass);
+#define injectprotocol(NAME) \
+    interface NAME ## _ProtocolInjectionContainer : NSObject < NAME \
+    > {} \
+    @end \
+    @implementation NAME ## _ProtocolInjectionContainer \
+    + (void)load { \
+        pi_protocolInjectionAdded(objc_getProtocol((# NAME )),self); \
+    }
 
-void injection(void);
+void pi_protocolInjectionAdded(Protocol *protocol,Class containerClass);
+
+void pi_classInjected(Class injectionClass);
+
+void pi_injection(void);

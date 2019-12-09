@@ -15,6 +15,8 @@
 		C96A20B9239CF5A40011D5DC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C96A20B7239CF5A40011D5DC /* LaunchScreen.storyboard */; };
 		C96A20BC239CF5A40011D5DC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C96A20BB239CF5A40011D5DC /* main.m */; };
 		C96A20C8239D16D60011D5DC /* ProtocolInjection.m in Sources */ = {isa = PBXBuildFile; fileRef = C96A20C7239D16D60011D5DC /* ProtocolInjection.m */; };
+		C96A20CB239E163B0011D5DC /* Runnable.m in Sources */ = {isa = PBXBuildFile; fileRef = C96A20CA239E163B0011D5DC /* Runnable.m */; };
+		C96A20CE239E1A110011D5DC /* ViewController+Injection.m in Sources */ = {isa = PBXBuildFile; fileRef = C96A20CD239E1A110011D5DC /* ViewController+Injection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,10 @@
 		C96A20BB239CF5A40011D5DC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C96A20C6239D16D60011D5DC /* ProtocolInjection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ProtocolInjection.h; sourceTree = "<group>"; };
 		C96A20C7239D16D60011D5DC /* ProtocolInjection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ProtocolInjection.m; sourceTree = "<group>"; };
+		C96A20C9239E161D0011D5DC /* Runnable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Runnable.h; sourceTree = "<group>"; };
+		C96A20CA239E163B0011D5DC /* Runnable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Runnable.m; sourceTree = "<group>"; };
+		C96A20CC239E1A110011D5DC /* ViewController+Injection.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ViewController+Injection.h"; sourceTree = "<group>"; };
+		C96A20CD239E1A110011D5DC /* ViewController+Injection.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ViewController+Injection.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,10 @@
 				C96A20AD239CF5A10011D5DC /* SceneDelegate.m */,
 				C96A20AF239CF5A10011D5DC /* ViewController.h */,
 				C96A20B0239CF5A10011D5DC /* ViewController.m */,
+				C96A20CC239E1A110011D5DC /* ViewController+Injection.h */,
+				C96A20CD239E1A110011D5DC /* ViewController+Injection.m */,
+				C96A20C9239E161D0011D5DC /* Runnable.h */,
+				C96A20CA239E163B0011D5DC /* Runnable.m */,
 				C96A20B2239CF5A10011D5DC /* Main.storyboard */,
 				C96A20B5239CF5A40011D5DC /* Assets.xcassets */,
 				C96A20B7239CF5A40011D5DC /* LaunchScreen.storyboard */,
@@ -159,11 +169,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C96A20CB239E163B0011D5DC /* Runnable.m in Sources */,
 				C96A20B1239CF5A10011D5DC /* ViewController.m in Sources */,
 				C96A20AB239CF5A10011D5DC /* AppDelegate.m in Sources */,
 				C96A20C8239D16D60011D5DC /* ProtocolInjection.m in Sources */,
 				C96A20BC239CF5A40011D5DC /* main.m in Sources */,
 				C96A20AE239CF5A10011D5DC /* SceneDelegate.m in Sources */,
+				C96A20CE239E1A110011D5DC /* ViewController+Injection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
