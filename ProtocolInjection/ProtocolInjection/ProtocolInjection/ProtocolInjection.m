@@ -9,8 +9,32 @@
 #import "ProtocolInjection.h"
 @import ObjectiveC.message;
 #import <CoreFoundation/CoreFoundation.h>
+#include <mach-o/getsect.h>
+#include <mach-o/loader.h>
+#include <mach-o/dyld.h>
 
-__attribute__((constructor)) static void ProtocolInject (void) {
+static void dyld_callback(const struct mach_header *mhp, intptr_t vmaddr_slide) {
+        unsigned long size = 0;
+    #ifndef __LP64__
+        uintptr_t *memory = (uintptr_t*)getsectiondata(mhp, SEG_DATA, "Injection", &size);
+    #else
+        const struct mach_header_64 *mhp64 = (const struct mach_header_64 *)mhp;
+        uintptr_t *memory = (uintptr_t*)getsectiondata(mhp64, SEG_DATA, "Injection", &size);
+    #endif
+        unsigned long counter = size/sizeof(void*);
+        for(int idx = 0; idx < counter; ++idx){
+            char *string = (char*)memory[idx];
+            NSString *str = [NSString stringWithUTF8String:string];
+            if(!str) continue;
+            pi_classInjected(NSClassFromString(str));
+        }
+}
+
+__attribute__((constructor(500))) static void __init() {
+    _dyld_register_func_for_add_image(dyld_callback);
+}
+
+__attribute__((constructor(501))) static void ProtocolInject (void) {
     pi_injection();
 }
 

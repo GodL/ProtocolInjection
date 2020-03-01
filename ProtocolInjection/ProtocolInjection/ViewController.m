@@ -9,15 +9,18 @@
 #import "ViewController.h"
 #import "Runnable.h"
 
-@interface ViewController ()<Runnable>
+
+@interface ViewController ()<Singable>
 
 @end
+ 
+injectionable(ViewController)
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"%d   %@",self.canRun,[[self class] runClass]);
+    NSLog(@"%d %d   %@",self.canRun,self.canSing,[[self class] runClass]);
     // Do any additional setup after loading the view.
 }
 

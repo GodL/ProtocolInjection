@@ -13,10 +13,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol Runnable <NSObject>
 
-@injection
+@optional
 + (Class)runClass;
 
 - (BOOL)canRun;
+
+@end
+
+@protocol Singable <Runnable>
+
+@optional
+- (BOOL)canSing;
 
 @end
 

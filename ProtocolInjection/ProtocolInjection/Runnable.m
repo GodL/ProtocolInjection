@@ -19,3 +19,19 @@
 }
 
 @end
+
+@injectprotocol(Singable)
+
+- (BOOL)canRun {
+    return YES;
+}
+
++ (Class)runClass {
+    return self;
+}
+
+- (BOOL)canSing {
+    return YES;
+}
+
+@end

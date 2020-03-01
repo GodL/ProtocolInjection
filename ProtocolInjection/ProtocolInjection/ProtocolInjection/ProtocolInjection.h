@@ -9,10 +9,13 @@
 #import <Foundation/Foundation.h>
 #import <objc/runtime.h>
 
-#define injectionable \
-    + (void)load { \
-        pi_classInjected(self); \
-    }
+#define injectionDATA __attribute((used, section("__DATA,Injection ")))
+
+#define classify(name) \
+(((void)(NO && ((void)name.class,NO)),#name))
+
+#define injectionable(name) \
+char * k##name##_injectionable injectionDATA = classify(name);
 
 #define injection optional;
 
