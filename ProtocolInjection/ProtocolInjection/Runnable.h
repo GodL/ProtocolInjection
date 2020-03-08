@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canRun;
 
+@property (nonatomic,copy) NSString *name;
+
 @end
 
 @protocol Singable <Runnable>

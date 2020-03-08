@@ -10,6 +10,8 @@
 
 @injectprotocol(Runnable)
 
+@synthesize name = _name;
+
 + (Class)runClass {
     return self;
 }
@@ -21,14 +23,6 @@
 @end
 
 @injectprotocol(Singable)
-
-- (BOOL)canRun {
-    return YES;
-}
-
-+ (Class)runClass {
-    return self;
-}
 
 - (BOOL)canSing {
     return YES;

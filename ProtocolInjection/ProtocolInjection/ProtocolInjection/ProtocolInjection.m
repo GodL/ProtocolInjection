@@ -43,11 +43,39 @@ static CFMutableDictionaryRef restrict injectionProtocols = NULL;
 static CFMutableSetRef restrict injectionClasses = NULL;
 
 FOUNDATION_STATIC_INLINE void _injectMethod(Class class,Method method) {
+    SEL selector = method_getName(method);
+    if (sel_isEqual(selector, @selector(initialize)) || sel_isEqual(selector, @selector(load))) return;
+#ifdef DEBUG
     if (class_getInstanceMethod(class, method_getName(method))) {
-        printf("Errr: Class has a custom imp for thie method %s %s",sel_getName(method_getName(method)),class_getName(class));
+        printf("Class has a custom imp for the method %s %s ====== maybe injected by subclass \n",sel_getName(method_getName(method)),class_getName(class));
         return;
     }
+#endif
     class_addMethod(class, method_getName(method), method_getImplementation(method), method_getTypeEncoding(method));
+}
+
+static void _injectionClassByProtocol(Protocol *protocol,Class cls) {
+    const void *protocolName = (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]);
+    if (CFDictionaryContainsKey(injectionProtocols, protocolName)) {
+        Class containerClass = CFDictionaryGetValue(injectionProtocols, protocolName);
+        unsigned int count = 0;
+        Method *instanceMethods = class_copyMethodList(containerClass, &count);
+        for (unsigned int j=0; j<count; j++) {
+            _injectMethod(cls, instanceMethods[j]);
+        }
+        Method *classMethods = class_copyMethodList(object_getClass(containerClass), &count);
+        for (unsigned int j=0; j<count; j++) {
+            _injectMethod(object_getClass(cls), classMethods[j]);
+        }
+        free(instanceMethods);
+        free(classMethods);
+    }
+    unsigned int superCount = 0;
+    __unsafe_unretained Protocol **protocols = protocol_copyProtocolList(protocol, &superCount);
+    for (int i=0; i<superCount; i++) {
+        _injectionClassByProtocol(protocols[i], cls);
+    }
+    free(protocols);
 }
 
 static void InjectionClassApplierFunction(const void *value,const void *context) {
@@ -56,20 +84,7 @@ static void InjectionClassApplierFunction(const void *value,const void *context)
     __unsafe_unretained Protocol **protocols = class_copyProtocolList(class, &count);
     for (unsigned int i =0; i<count; i++) {
         Protocol *protocol = protocols[i];
-        if (CFDictionaryContainsKey(injectionProtocols, (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]))) {
-            Class containerClass = CFDictionaryGetValue(injectionProtocols, (__bridge const void *)([NSString stringWithUTF8String:protocol_getName(protocol)]));
-            unsigned int count = 0;
-            Method *instanceMethods = class_copyMethodList(containerClass, &count);
-            for (unsigned int j=0; j<count; j++) {
-                _injectMethod(class, instanceMethods[j]);
-            }
-            Method *classMethods = class_copyMethodList(object_getClass(containerClass), &count);
-            for (unsigned int j=0; j<count; j++) {
-                _injectMethod(object_getClass(class), classMethods[j]);
-            }
-            free(instanceMethods);
-            free(classMethods);
-        }
+        _injectionClassByProtocol(protocol, class);
     }
     free(protocols);
 }

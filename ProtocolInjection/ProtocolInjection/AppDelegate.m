@@ -7,13 +7,15 @@
 //
 
 #import "AppDelegate.h"
+#import "Runnable.h"
 
-@interface AppDelegate ()
+injectionable(AppDelegate)
+
+@interface AppDelegate ()<Runnable>
 
 @end
 
 @implementation AppDelegate
-
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.

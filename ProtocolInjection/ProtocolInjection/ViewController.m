@@ -20,7 +20,7 @@ injectionable(ViewController)
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    NSLog(@"%d %d   %@",self.canRun,self.canSing,[[self class] runClass]);
+    NSLog(@"%d %@ %d   %@",self.canRun,self.name,self.canSing,[[self class] runClass]);
     // Do any additional setup after loading the view.
 }
 
